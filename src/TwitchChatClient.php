@@ -9,11 +9,16 @@ class TwitchChatClient
     protected $oauth;
     protected $nick;
 
-    static $host = "irc.chat.twitch.tv";
-    static $port = "6667";
-    static $pong_response = ":tmi.twitch.tv";
+    public static $host = 'irc.chat.twitch.tv';
+    public static $port = '6667';
+    public static $pong_response = ':tmi.twitch.tv';
 
-    public function __construct($channel, $oauth, $nick)
+    /**
+     * @param string $channel The twitch channel you wish to join
+     * @param string $nick    The user account to login as
+     * @param string $oauth   The OAuth token generated for the $nick account
+     */
+    public function __construct($channel, $nick, $oauth)
     {
         $this->channel = $channel;
         $this->oauth = $oauth;
@@ -23,7 +28,7 @@ class TwitchChatClient
     public function connect()
     {
         $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        if (socket_connect($this->socket, self::$host, self::$port) === FALSE) {
+        if (false === socket_connect($this->socket, self::$host, self::$port)) {
             return null;
         }
 
@@ -32,27 +37,27 @@ class TwitchChatClient
         $this->joinChannel($this->channel);
 
         // Welcom message
-        $this->say('/me *beep boop beep* MrDestructoid');
+        // $this->say('/me *beep boop beep* MrDestructoid');
     }
 
     public function authenticate()
     {
-        $this->send(sprintf("PASS %s", $this->oauth));
+        $this->send(sprintf('PASS %s', $this->oauth));
     }
 
     public function setNick()
     {
-        $this->send(sprintf("NICK %s", $this->nick));
+        $this->send(sprintf('NICK %s', $this->nick));
     }
 
     public function joinChannel($channel)
     {
-        $this->send(sprintf("JOIN #%s", $channel));
+        $this->send(sprintf('JOIN #%s', $channel));
     }
-    
+
     public function say($message)
     {
-        $this->send(sprintf("PRIVMSG #%s :%s", $this->channel, $message));
+        $this->send(sprintf('PRIVMSG #%s :%s', $this->channel, $message));
     }
 
     public function getLastError()
@@ -80,7 +85,7 @@ class TwitchChatClient
             return null;
         }
 
-        return socket_write($this->socket, $message . "\r\n");
+        return socket_write($this->socket, $message."\r\n");
     }
 
     public function close()
@@ -88,7 +93,8 @@ class TwitchChatClient
         socket_close($this->socket);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         $this->close();
     }
 }

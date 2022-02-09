@@ -12,12 +12,12 @@ $dotenv->usePutenv(true);
 // loads .env, .env.local, and .env.$APP_ENV.local or .env.$APP_ENV
 $dotenv->loadEnv(__DIR__.'/.env');
 
-
-$client = new TwitchChatClient(getenv('TWITCH_CHANNEL'), getenv('TWITCH_OAUTH'), 'BeignetFraise');
+$client = new TwitchChatClient(getenv('TWITCH_CHANNEL'), getenv('TWITCH_CHANNEL'), getenv('TWITCH_OAUTH'));
 
 $client->connect();
 if (!$client->isConnected()) {
-    $this->getPrinter()->error("It was not possible to connect.");
+    $this->getPrinter()->error('It was not possible to connect.');
+
     return;
 }
 dump('Connected.');
