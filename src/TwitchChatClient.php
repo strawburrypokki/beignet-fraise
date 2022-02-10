@@ -36,6 +36,9 @@ class TwitchChatClient
         $this->setNick();
         $this->joinChannel($this->channel);
 
+        // Change color 💅
+        // Blue, Coral, DodgerBlue, SpringGreen, YellowGreen, Green, OrangeRed, Red, GoldenRod, HotPink, CadetBlue, SeaGreen, Chocolate, BlueViolet, and Firebrick.
+        $this->say('/color HotPink');
         // Welcome message
         if($sayHello) {
             $this->say('/me *beep boop beep* MrDestructoid');
