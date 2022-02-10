@@ -62,6 +62,10 @@ class TwitchCommand extends Command
             }
             //is it an actual msg?
             elseif (strstr($content, 'PRIVMSG')) {
+                if (strstr($content, '@'.getenv('TWITCH_USER'))) {
+                    $client->say('Oui?');
+                }
+
                 $output->writeln(
                     $content,
                     OutputInterface::VERBOSITY_VERBOSE
