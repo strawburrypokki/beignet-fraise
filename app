@@ -4,7 +4,6 @@
 require __DIR__.'/vendor/autoload.php';
 
 use App\Command\TwitchCommand;
-use App\TwitchChatClient;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Dotenv\Dotenv;
 

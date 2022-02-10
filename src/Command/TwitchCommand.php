@@ -16,6 +16,7 @@ class TwitchCommand extends Command
     {
         $this
             ->addOption('colors', 'c', InputOption::VALUE_OPTIONAL, 'Colored output or not', true)
+            ->addOption('say-hello', 'w', InputOption::VALUE_OPTIONAL, 'Say a "hello" when joining the channel', true)
             ->setDescription('Start the twitch chat bot.')
             ->setHelp('Connects to [TWITCH_CHANNEL] channel, with the bot account token [TWITCH_OAUTH]');
     }
@@ -23,13 +24,13 @@ class TwitchCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $colors = $input->getOption('colors');
-        
+
         $client = new TwitchChatClient(getenv('TWITCH_CHANNEL'), getenv('TWITCH_USER'), getenv('TWITCH_OAUTH'));
 
-        $client->connect();
+        $client->connect($input->getOption('say-hello'));
         if (!$client->isConnected()) {
             if ($colors) {
-                $output->writeln('<fg=#c0392b>It was not possible to connect.</>');
+                $output->writeln('<error>It was not possible to connect.</>');
             } else {
                 $output->writeln('It was not possible to connect.');
             }
@@ -38,7 +39,7 @@ class TwitchCommand extends Command
         }
 
         if ($colors) {
-            $output->writeln(sprintf('Successfully connected to <fg=green>%s</>!', getenv('TWITCH_CHANNEL')));
+            $output->writeln(sprintf('Successfully connected to <info>%s</>!', getenv('TWITCH_CHANNEL')));
         } else {
             $output->writeln(sprintf('Successfully connected to %s!', getenv('TWITCH_CHANNEL')));
         }
@@ -65,10 +66,16 @@ class TwitchCommand extends Command
                     $content,
                     OutputInterface::VERBOSITY_VERBOSE
                 );
+                if (preg_match('`.*:([a-zA-Z]+)!.*:(.*)`', $content, $matches)) {
+                    if ($colors) {
+                        $output->writeln(sprintf('<comment>%s</>: %s', $matches[1], $matches[2]));
+                    } else {
+                        $output->writeln(sprintf('%s: %s', $matches[1], $matches[2]));
+                    }
+                }
                 continue;
             }
-
-            sleep(5);
+            sleep(3);
         }
     }
 }

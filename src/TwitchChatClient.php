@@ -25,7 +25,7 @@ class TwitchChatClient
         $this->nick = $nick;
     }
 
-    public function connect()
+    public function connect($sayHello = true)
     {
         $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         if (false === socket_connect($this->socket, self::$host, self::$port)) {
@@ -37,7 +37,9 @@ class TwitchChatClient
         $this->joinChannel($this->channel);
 
         // Welcome message
-        $this->say('/me *beep boop beep* MrDestructoid');
+        if($sayHello) {
+            $this->say('/me *beep boop beep* MrDestructoid');
+        }
     }
 
     public function authenticate()
