@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\TwitchChatClient;
+use App\Watchdog\MessageProcessor;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,6 +13,21 @@ use Symfony\Component\Console\Output\OutputInterface;
 class TwitchCommand extends Command
 {
     protected static $defaultName = 'twitch';
+
+    /**
+     * @var MessageProcessor
+     */
+    protected $processor;
+
+    /**
+     * @param MessageProcessor $processor
+     * @param string|null $name
+     */
+    public function __construct(MessageProcessor $processor, string $name = null)
+    {
+        parent::__construct($name);
+        $this->processor = $processor;
+    }
 
     public function configure()
     {
@@ -49,6 +65,10 @@ class TwitchCommand extends Command
 
         while (true) {
             $content = $client->read(512);
+            $output->writeln(
+                $content,
+                OutputInterface::VERBOSITY_VERBOSE
+            );
 
             //is it a ping?
             if (strstr($content, 'PING')) {
@@ -65,14 +85,9 @@ class TwitchCommand extends Command
             }
             //is it an actual msg?
             elseif (strstr($content, 'PRIVMSG')) {
-                if (strstr($content, '@'.getenv('TWITCH_BOT_ACCOUNT'))) {
-                    $client->say('Oui?');
-                }
+                // $response = $this->processor->process($content);
+                // $client->say($response);
 
-                $output->writeln(
-                    $content,
-                    OutputInterface::VERBOSITY_VERBOSE
-                );
                 if (preg_match('`.*:([a-zA-Z]+)!.*:(.*)`', $content, $matches)) {
                     if ($colors) {
                         $output->writeln(sprintf('<comment>%s</>: %s', $matches[1], $matches[2]));

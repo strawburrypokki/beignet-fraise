@@ -10,6 +10,8 @@ use Symfony\Component\Console\CommandLoader\ContainerCommandLoader;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 $dotenv = new Dotenv();
 $dotenv->usePutenv(true);
@@ -17,6 +19,9 @@ $dotenv->usePutenv(true);
 $dotenv->loadEnv(__DIR__.'/.env');
 
 $container = new ContainerBuilder();
+$container->register(EventDispatcher::class, EventDispatcher::class);
+$container->addCompilerPass(new RegisterListenersPass(EventDispatcher::class));
+
 $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/config'));
 $loader->load('services.yaml');
 $container->compile();
