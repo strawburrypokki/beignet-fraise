@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\TwitchChatClient;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,17 +16,19 @@ class TwitchCommand extends Command
     public function configure()
     {
         $this
+            ->addArgument('channel', InputArgument::REQUIRED, 'The Twitch channel you wish to join')
             ->addOption('colors', 'c', InputOption::VALUE_OPTIONAL, 'Colored output or not', true)
             ->addOption('say-hello', 'w', InputOption::VALUE_OPTIONAL, 'Say a "hello" when joining the channel', true)
-            ->setDescription('Start the twitch chat bot.')
+            ->setDescription('Start the Twitch chat bot.')
             ->setHelp('Connects to [TWITCH_CHANNEL] channel, with the bot account token [TWITCH_OAUTH]');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $colors = $input->getOption('colors');
+        $channel = $input->getArgument('channel');
 
-        $client = new TwitchChatClient(getenv('TWITCH_CHANNEL'), getenv('TWITCH_USER'), getenv('TWITCH_OAUTH'));
+        $client = new TwitchChatClient($channel, getenv('TWITCH_BOT_ACCOUNT'), getenv('TWITCH_OAUTH'));
 
         $client->connect($input->getOption('say-hello'));
         if (!$client->isConnected()) {
@@ -39,9 +42,9 @@ class TwitchCommand extends Command
         }
 
         if ($colors) {
-            $output->writeln(sprintf('Successfully connected to <info>%s</>!', getenv('TWITCH_CHANNEL')));
+            $output->writeln(sprintf('Successfully connected to <info>%s</>!', $channel));
         } else {
-            $output->writeln(sprintf('Successfully connected to %s!', getenv('TWITCH_CHANNEL')));
+            $output->writeln(sprintf('Successfully connected to %s!', $channel));
         }
 
         while (true) {
@@ -62,7 +65,7 @@ class TwitchCommand extends Command
             }
             //is it an actual msg?
             elseif (strstr($content, 'PRIVMSG')) {
-                if (strstr($content, '@'.getenv('TWITCH_USER'))) {
+                if (strstr($content, '@'.getenv('TWITCH_BOT_ACCOUNT'))) {
                     $client->say('Oui?');
                 }
 
