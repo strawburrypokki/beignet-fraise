@@ -3,7 +3,9 @@
         "symfony/console": "^5.0",
         "symfony/dependency-injection": "^5.0",
         "symfony/dotenv": "^5.0",
-        "symfony/flex": "^1.18"
+        "symfony/flex": "^1.18",
+        "symfony/config": "^5.4",
+        "symfony/yaml": "^5.4"
     },
     "autoload": {
         "psr-4": {
