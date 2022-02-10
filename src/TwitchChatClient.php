@@ -36,8 +36,8 @@ class TwitchChatClient
         $this->setNick();
         $this->joinChannel($this->channel);
 
-        // Welcom message
-        // $this->say('/me *beep boop beep* MrDestructoid');
+        // Welcome message
+        $this->say('/me *beep boop beep* MrDestructoid');
     }
 
     public function authenticate()
