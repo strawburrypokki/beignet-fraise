@@ -1,0 +1,4 @@
+services:
+  App\Command\:
+    resource: '../src/Command/*'
+    public: true
