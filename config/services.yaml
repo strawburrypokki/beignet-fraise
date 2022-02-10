@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+  twitch.bot_account: '%env(string:TWITCH_BOT_ACCOUNT)%'
+  twitch.oauth: '%env(string:TWITCH_OAUTH)%'
 
 services:
     # default configuration for services in *this* file
@@ -21,8 +23,12 @@ services:
             - '../src/Kernel.php'
     App\Watchdog\Subscriber\PingBotSubscriber:
       arguments:
-        $botAccountName: '%env(string:TWITCH_BOT_ACCOUNT)%'
+        $twitchBotAccount: '%twitch.bot_account%'
       tags: ['kernel.event_subscriber']
+    App\Command\TwitchCommand:
+      arguments:
+        $twitchBotAccount: '%twitch.bot_account%'
+        $twitchOauth: '%twitch.oauth%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

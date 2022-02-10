@@ -7,6 +7,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PingBotSubscriber implements EventSubscriberInterface
 {
+    protected $twitchBotAccount;
+
     public static function getSubscribedEvents():array
     {
         return [
@@ -14,14 +16,14 @@ class PingBotSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function __construct(string $botAccountName)
+    public function __construct(string $twitchBotAccount)
     {
-        $this->botAccountName = $botAccountName;
+        $this->twitchBotAccount = $twitchBotAccount;
     }
 
     public function onPingBot(ProcessMessageEvent $event)
     {
-        if (strstr($event->getMessage()->getRawMessage(), '@'.$this->botAccountName)) {
+        if (strstr($event->getMessage()->getRawMessage(), '@'.$this->twitchBotAccount)) {
             $event->setResponse("Qu'est-ce que vous me voulez vous?");
             $event->stopPropagation();
         }

@@ -15,6 +15,15 @@ class TwitchCommand extends Command
     protected static $defaultName = 'twitch';
 
     /**
+     * @var string
+     */
+    protected $twitchBotAccount;
+    /**
+     * @var string
+     */
+    protected $twitchOauth;
+
+    /**
      * @var MessageProcessor
      */
     protected $processor;
@@ -23,9 +32,15 @@ class TwitchCommand extends Command
      * @param MessageProcessor $processor
      * @param string|null $name
      */
-    public function __construct(MessageProcessor $processor, string $name = null)
+    public function __construct(
+        string $twitchBotAccount, 
+        string $twitchOauth,
+        MessageProcessor $processor,
+        string $name = null)
     {
         parent::__construct($name);
+        $this->twitchBotAccount = $twitchBotAccount;
+        $this->twitchOauth = $twitchOauth;
         $this->processor = $processor;
     }
 
@@ -44,7 +59,7 @@ class TwitchCommand extends Command
         $colors = $input->getOption('colors');
         $channel = $input->getArgument('channel');
 
-        $client = new TwitchChatClient($channel, getenv('TWITCH_BOT_ACCOUNT'), getenv('TWITCH_OAUTH'));
+        $client = new TwitchChatClient($channel, $this->twitchBotAccount, $this->twitchOauth);
 
         $client->connect($input->getOption('say-hello'));
         if (!$client->isConnected()) {
@@ -67,7 +82,7 @@ class TwitchCommand extends Command
             $content = $client->read(512);
             $output->writeln(
                 $content,
-                OutputInterface::VERBOSITY_VERBOSE
+                OutputInterface::VERBOSITY_VERY_VERBOSE
             );
 
             //is it a ping?
@@ -85,8 +100,8 @@ class TwitchCommand extends Command
             }
             //is it an actual msg?
             elseif (strstr($content, 'PRIVMSG')) {
-                // $response = $this->processor->process($content);
-                // $client->say($response);
+                $response = $this->processor->process($content);
+                $client->say($response);
 
                 if (preg_match('`.*:([a-zA-Z]+)!.*:(.*)`', $content, $matches)) {
                     if ($colors) {

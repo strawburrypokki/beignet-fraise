@@ -25,7 +25,15 @@ class TwitchChatClient
         $this->nick = $nick;
     }
 
-    public function connect($sayHello = true)
+    /**
+     * Connect to the configure twitch channel.
+     *
+     * @param bool   $sayHello Wether to say hello or not
+     * @param string $color    nick color (Blue, Coral, DodgerBlue, SpringGreen, YellowGreen, Green, OrangeRed, Red, GoldenRod, HotPink, CadetBlue, SeaGreen, Chocolate, BlueViolet, Firebrick)
+     *
+     * @return void
+     */
+    public function connect($sayHello = true, $color = 'HotPink')
     {
         $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         if (false === socket_connect($this->socket, self::$host, self::$port)) {
@@ -38,9 +46,9 @@ class TwitchChatClient
 
         // Change color 💅
         // Blue, Coral, DodgerBlue, SpringGreen, YellowGreen, Green, OrangeRed, Red, GoldenRod, HotPink, CadetBlue, SeaGreen, Chocolate, BlueViolet, and Firebrick.
-        $this->say('/color HotPink');
+        $this->say('/color '.$color);
         // Welcome message
-        if($sayHello) {
+        if ($sayHello) {
             $this->say('/me *beep boop beep* MrDestructoid');
         }
     }
