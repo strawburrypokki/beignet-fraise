@@ -23,6 +23,12 @@ class PingBotSubscriber implements EventSubscriberInterface
         'D:',
     ];
 
+    protected $broadcasterReplies = [
+        'Oui bonjour!',
+        'Vous êtes trop fort!',
+        'A votre service!',
+    ];
+
     public static function getSubscribedEvents(): array
     {
         return [
@@ -39,8 +45,10 @@ class PingBotSubscriber implements EventSubscriberInterface
 
     public function onPingBot(ProcessMessageEvent $event)
     {
+        $event->getMessage()->parseRawMessage();
         if (strstr($event->getMessage()->getRawMessage(), '@'.$this->twitchBotAccount)) {
-            $event->setResponse($this->replies[array_rand($this->replies)]);
+            $repliesPool = $event->getMessage()->isBroadcaster() ? $this->broadcasterReplies : $this->replies;
+            $event->setResponse($repliesPool[array_rand($repliesPool)]);
             $event->stopPropagation();
         }
     }

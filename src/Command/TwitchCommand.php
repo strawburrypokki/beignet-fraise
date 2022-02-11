@@ -102,14 +102,6 @@ class TwitchCommand extends Command
             elseif (strstr($content, 'PRIVMSG')) {
                 $response = $this->processor->process($content);
                 $client->say($response);
-
-                if (preg_match('`.*:([a-zA-Z]+)!.*:(.*)`', $content, $matches)) {
-                    if ($colors) {
-                        $output->writeln(sprintf('<comment>%s</>: %s', $matches[1], $matches[2]));
-                    } else {
-                        $output->writeln(sprintf('%s: %s', $matches[1], $matches[2]));
-                    }
-                }
                 continue;
             }
             sleep(3);

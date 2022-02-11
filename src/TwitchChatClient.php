@@ -43,6 +43,8 @@ class TwitchChatClient
         $this->authenticate();
         $this->setNick();
         $this->joinChannel($this->channel);
+        // Request Tags capability
+        $this->requestCap('twitch.tv/tags');
 
         // Change color 💅
         // Blue, Coral, DodgerBlue, SpringGreen, YellowGreen, Green, OrangeRed, Red, GoldenRod, HotPink, CadetBlue, SeaGreen, Chocolate, BlueViolet, and Firebrick.
@@ -66,6 +68,11 @@ class TwitchChatClient
     public function joinChannel($channel)
     {
         $this->send(sprintf('JOIN #%s', $channel));
+    }
+
+    public function requestCap($capability)
+    {
+        $this->send(sprintf('CAP REQ :%s', $capability));
     }
 
     public function say($message)
