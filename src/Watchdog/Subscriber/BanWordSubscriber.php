@@ -2,7 +2,7 @@
 
 namespace App\Watchdog\Subscriber;
 
-use App\Watchdog\Event\ProcessMessageEvent;
+use App\Watchdog\Event\SniffMessageEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class BanWordSubscriber implements EventSubscriberInterface
@@ -18,13 +18,13 @@ class BanWordSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ProcessMessageEvent::NAME => [
+            SniffMessageEvent::NAME => [
                 ['onBanWord', 999],
             ],
         ];
     }
 
-    public function onBanWord(ProcessMessageEvent $event)
+    public function onBanWord(SniffMessageEvent $event)
     {
         $message = preg_replace("/\s+/", "", $event->getMessage()->getMessage());
         $messageMetaphoneKey = metaphone($message);

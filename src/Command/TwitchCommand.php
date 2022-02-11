@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\TwitchChatClient;
-use App\Watchdog\MessageProcessor;
+use App\Watchdog\Watchdog;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,24 +24,24 @@ class TwitchCommand extends Command
     protected $twitchOauth;
 
     /**
-     * @var MessageProcessor
+     * @var Watchdog
      */
-    protected $processor;
+    protected $watchdog;
 
     /**
-     * @param MessageProcessor $processor
+     * @param Watchdog $watchdog
      * @param string|null $name
      */
     public function __construct(
         string $twitchBotAccount, 
         string $twitchOauth,
-        MessageProcessor $processor,
+        Watchdog $watchdog,
         string $name = null)
     {
         parent::__construct($name);
         $this->twitchBotAccount = $twitchBotAccount;
         $this->twitchOauth = $twitchOauth;
-        $this->processor = $processor;
+        $this->watchdog = $watchdog;
     }
 
     public function configure()
@@ -100,7 +100,7 @@ class TwitchCommand extends Command
             }
             //is it an actual msg?
             elseif (strstr($content, 'PRIVMSG')) {
-                $response = $this->processor->process($content);
+                $response = $this->watchdog->sniff($content);
                 $client->say($response);
                 continue;
             }

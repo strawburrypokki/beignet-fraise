@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Watchdog;
+namespace App\Twitch;
 
-use App\Twitch\Badge;
 use RuntimeException;
 
 class Message

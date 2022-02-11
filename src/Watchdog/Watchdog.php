@@ -2,10 +2,11 @@
 
 namespace App\Watchdog;
 
-use App\Watchdog\Event\ProcessMessageEvent;
+use App\Twitch\Message;
+use App\Watchdog\Event\SniffMessageEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class MessageProcessor
+class Watchdog
 {
     /**
      * @var EventDispatcherInterface
@@ -22,11 +23,11 @@ class MessageProcessor
      *
      * @param string $rawMessage The RAW incoming message to process
      */
-    public function process(string $rawMessage)
+    public function sniff(string $rawMessage)
     {
         $message = new Message($rawMessage);
-        $event = new ProcessMessageEvent($message);
-        $this->dispatcher->dispatch($event, ProcessMessageEvent::NAME);
+        $event = new SniffMessageEvent($message);
+        $this->dispatcher->dispatch($event, SniffMessageEvent::NAME);
 
         return $event->getResponse();
     }

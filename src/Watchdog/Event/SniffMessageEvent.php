@@ -2,10 +2,10 @@
 
 namespace App\Watchdog\Event;
 
-use App\Watchdog\Message;
+use App\Twitch\Message;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class ProcessMessageEvent extends Event
+class SniffMessageEvent extends Event
 {
     public const NAME = 'message.process';
 

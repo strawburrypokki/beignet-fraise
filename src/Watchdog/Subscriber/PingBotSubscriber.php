@@ -2,7 +2,7 @@
 
 namespace App\Watchdog\Subscriber;
 
-use App\Watchdog\Event\ProcessMessageEvent;
+use App\Watchdog\Event\SniffMessageEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PingBotSubscriber implements EventSubscriberInterface
@@ -32,7 +32,7 @@ class PingBotSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ProcessMessageEvent::NAME => [
+            SniffMessageEvent::NAME => [
                 ['onPingBot', 0],
             ],
         ];
@@ -43,7 +43,7 @@ class PingBotSubscriber implements EventSubscriberInterface
         $this->twitchBotAccount = $twitchBotAccount;
     }
 
-    public function onPingBot(ProcessMessageEvent $event)
+    public function onPingBot(SniffMessageEvent $event)
     {
         $event->getMessage()->parseRawMessage();
         if (strstr($event->getMessage()->getRawMessage(), '@'.$this->twitchBotAccount)) {
