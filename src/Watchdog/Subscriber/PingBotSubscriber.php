@@ -23,10 +23,12 @@ class PingBotSubscriber implements EventSubscriberInterface
         'D:',
     ];
 
-    public static function getSubscribedEvents():array
+    public static function getSubscribedEvents(): array
     {
         return [
-            ProcessMessageEvent::NAME => 'onPingBot',
+            ProcessMessageEvent::NAME => [
+                ['onPingBot', 0],
+            ],
         ];
     }
 
