@@ -5,6 +5,7 @@ namespace App\Command;
 use App\TwitchChatClient;
 use App\Watchdog\Watchdog;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -58,6 +59,10 @@ class TwitchCommand extends Command
     {
         $colors = $input->getOption('colors');
         $channel = $input->getArgument('channel');
+
+        if(!strlen($channel)) {
+            throw new RuntimeException('Missing "Channel" (got empty string)');
+        }
 
         $client = new TwitchChatClient($channel, $this->twitchBotAccount, $this->twitchOauth);
 
