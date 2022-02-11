@@ -44,7 +44,12 @@ class BanWordSubscriber implements EventSubscriberInterface
 
             // All ban words where inside the user message
             if($find == count($banwords)) {
-                $event->setResponse('Je reconnais ca! C\'est motif de ban!');
+                if($event->getMessage()->hasRankModerator()) {
+                    $event->setResponse('C\'est pas bien de narguer les gens!');
+                } else {
+                    $event->setResponse('Je reconnais ca! C\'est motif de ban!');
+                }
+                
                 $event->stopPropagation();
                 break;
             }

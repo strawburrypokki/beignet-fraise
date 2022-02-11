@@ -79,6 +79,11 @@ class Message
         return;
     }
 
+    public function hasRankModerator(): bool
+    {
+        return $this->isModerator() || $this->isBroadcaster();
+    }
+
     public function getNickname(): ?string
     {
         if (!$this->nickname) {
