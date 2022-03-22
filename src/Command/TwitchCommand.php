@@ -9,6 +9,7 @@ use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class TwitchCommand extends Command
@@ -34,11 +35,11 @@ class TwitchCommand extends Command
      * @param string|null $name
      */
     public function __construct(
-        string $twitchBotAccount, 
+        string $twitchBotAccount,
         string $twitchOauth,
         Watchdog $watchdog,
-        string $name = null)
-    {
+        string $name = null
+    ) {
         parent::__construct($name);
         $this->twitchBotAccount = $twitchBotAccount;
         $this->twitchOauth = $twitchOauth;
@@ -50,7 +51,7 @@ class TwitchCommand extends Command
         $this
             ->addArgument('channel', InputArgument::REQUIRED, 'The Twitch channel you wish to join')
             ->addOption('colors', 'c', InputOption::VALUE_OPTIONAL, 'Colored output or not', true)
-            ->addOption('say-hello', 'w', InputOption::VALUE_OPTIONAL, 'Say a "hello" when joining the channel', true)
+            ->addOption('say-hello', 'w', InputOption::VALUE_OPTIONAL, 'Bot says "hello" when joining the channel', true)
             ->setDescription('Start the Twitch chat bot.')
             ->setHelp('Connects to [TWITCH_CHANNEL] channel, with the bot account token [TWITCH_OAUTH]');
     }
@@ -60,10 +61,11 @@ class TwitchCommand extends Command
         $colors = $input->getOption('colors');
         $channel = $input->getArgument('channel');
 
-        if(!strlen($channel)) {
+        if (!strlen($channel)) {
             throw new RuntimeException('Missing "Channel" (got empty string)');
         }
 
+        $logger = new ConsoleLogger($output);
         $client = new TwitchChatClient($channel, $this->twitchBotAccount, $this->twitchOauth);
 
         $client->connect($input->getOption('say-hello'));
@@ -105,7 +107,13 @@ class TwitchCommand extends Command
             }
             //is it an actual msg?
             elseif (strstr($content, 'PRIVMSG')) {
-                $response = $this->watchdog->sniff($content);
+                $response = $this->watchdog->sniff($content, $logger);
+                if(!$response) {
+                    $output->writeln(
+                        'I have nothing to say :|', 
+                        OutputInterface::VERBOSITY_DEBUG
+                    );
+                }
                 $client->say($response);
                 continue;
             }

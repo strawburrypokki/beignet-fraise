@@ -4,6 +4,7 @@ namespace App\Watchdog;
 
 use App\Twitch\Message;
 use App\Watchdog\Event\SniffMessageEvent;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Watchdog
@@ -23,7 +24,7 @@ class Watchdog
      *
      * @param string $rawMessage The RAW incoming message to process
      */
-    public function sniff(string $rawMessage)
+    public function sniff(string $rawMessage, LoggerInterface $logger = null)
     {
         $message = new Message($rawMessage);
         $event = new SniffMessageEvent($message);

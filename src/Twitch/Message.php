@@ -37,6 +37,8 @@ class Message
     protected $isBroadcaster = false;
 
     /**
+     * Is the author of the message a moderator of the channel?
+     * 
      * @var bool
      */
     protected $isModerator = false;
@@ -49,7 +51,7 @@ class Message
     /**
      * Parse $rawMessage to get $nickname and $message.
      *
-     * @return void
+     * @return self
      *
      * @throws RuntimeException
      */
@@ -76,7 +78,7 @@ class Message
             throw new RuntimeException('Could not parse raw message "%s"', $this->rawMessage);
         }
 
-        return;
+        return $this;
     }
 
     public function hasRankModerator(): bool
