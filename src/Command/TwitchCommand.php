@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\TwitchChatClient;
 use App\Watchdog\Watchdog;
+use Predis\Client;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;

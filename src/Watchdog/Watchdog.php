@@ -3,6 +3,7 @@
 namespace App\Watchdog;
 
 use App\Twitch\Message;
+use App\Watchdog\Event\SniffCommandEvent;
 use App\Watchdog\Event\SniffMessageEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -26,9 +27,15 @@ class Watchdog
      */
     public function sniff(string $rawMessage, LoggerInterface $logger = null)
     {
-        $message = new Message($rawMessage);
-        $event = new SniffMessageEvent($message);
-        $this->dispatcher->dispatch($event, SniffMessageEvent::NAME);
+        $message = (new Message($rawMessage))->parseRawMessage();
+
+        $event = null;
+        if($message->isCommand()) {
+            $event = new SniffCommandEvent($message);
+        } else {
+            $event = new SniffMessageEvent($message);
+        }
+        $this->dispatcher->dispatch($event, $event::NAME);
 
         return $event->getResponse();
     }

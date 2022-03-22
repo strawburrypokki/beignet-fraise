@@ -32,6 +32,15 @@ class Message
     protected $rawTags;
 
     /**
+     * Is message a exclamation mark command (!command)?
+     * 
+     * @var bool
+     */
+    protected $isCommand = false;
+
+    /**
+     * Is the author of the message the broadcaster of the channel?
+     * 
      * @var bool
      */
     protected $isBroadcaster = false;
@@ -73,6 +82,10 @@ class Message
                 $this->setIsModerator(true);
             } elseif (strstr($this->getRawTags(), Badge::BADGE_BROADCASTER)) {
                 $this->setIsBroadcaster(true);
+            }
+
+            if(0 === strpos($this->getMessage(), '!')) {
+                $this->setIsCommand(true);
             }
         } else {
             throw new RuntimeException('Could not parse raw message "%s"', $this->rawMessage);
@@ -150,6 +163,18 @@ class Message
     public function setIsModerator(bool $isModerator): self
     {
         $this->isModerator = $isModerator;
+
+        return $this;
+    }
+
+    public function isCommand(): bool
+    {
+        return $this->isCommand;
+    }
+
+    public function setIsCommand(bool $isCommand): self
+    {
+        $this->isCommand = $isCommand;
 
         return $this;
     }

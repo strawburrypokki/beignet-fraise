@@ -2,11 +2,16 @@
 
 namespace App\Watchdog\Subscriber;
 
+use App\Contract\Redis\RedisAwareInterface;
+use App\Contract\Redis\RedisAwareTrait;
 use App\Watchdog\Event\SniffMessageEvent;
+use Predis\Client;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class BanWordSubscriber implements EventSubscriberInterface
+class BanWordSubscriber implements EventSubscriberInterface, RedisAwareInterface
 {
+    use RedisAwareTrait;
+
     protected $banWordConfigs = [
         // 'demon',
         // 'slayer',
@@ -14,6 +19,11 @@ class BanWordSubscriber implements EventSubscriberInterface
         'demon,slayer',
         // 'demon,slayer,meurt',
     ];
+
+    public function __construct(Client $client)
+    {
+        $this->redisClient = $client;
+    }
 
     public static function getSubscribedEvents(): array
     {
