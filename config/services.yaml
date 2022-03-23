@@ -6,7 +6,7 @@
 parameters:
   twitch.bot_account: '%env(string:TWITCH_BOT_ACCOUNT)%'
   twitch.oauth: '%env(string:TWITCH_OAUTH)%'
-  redis.dns: '%env(string:REDIS_DSN)%'
+  redis.dsn: '%env(string:REDIS_DSN)%'
 
 services:
     # default configuration for services in *this* file
@@ -31,7 +31,7 @@ services:
         $twitchOauth: '%twitch.oauth%'
     Predis\Client:
       arguments:
-        $parameters: '%redis.dns%'
+        $parameters: '%redis.dsn%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
