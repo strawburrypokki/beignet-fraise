@@ -5,20 +5,13 @@ namespace App\Watchdog\Subscriber;
 use App\Contract\Redis\RedisAwareInterface;
 use App\Contract\Redis\RedisAwareTrait;
 use App\Watchdog\Event\SniffMessageEvent;
+use App\Watchdog\Subscriber\Command\BanwordSubscriber as BanwordCommand;
 use Predis\Client;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class BanWordSubscriber implements EventSubscriberInterface, RedisAwareInterface
 {
     use RedisAwareTrait;
-
-    protected $banWordConfigs = [
-        // 'demon',
-        // 'slayer',
-        // 'meurt',
-        'demon,slayer',
-        // 'demon,slayer,meurt',
-    ];
 
     public function __construct(Client $client)
     {
@@ -39,10 +32,10 @@ class BanWordSubscriber implements EventSubscriberInterface, RedisAwareInterface
         $message = preg_replace("/\s+/", "", $event->getMessage()->getMessage());
         $messageMetaphoneKey = metaphone($message);
         // dump($messageMetaphoneKey);
-        foreach($this->banWordConfigs as $config) {
+        foreach ($this->redisClient->hgetall(BanwordCommand::REDIS_KEY) as $config) {
             $banwords = explode(',', $config);
             $find = 0;
-            foreach($banwords as $banword) {
+            foreach ($banwords as $banword) {
                 $banwordMetaphoneKey = metaphone($banword);
                 // dump($banwordMetaphoneKey);
 
@@ -53,13 +46,13 @@ class BanWordSubscriber implements EventSubscriberInterface, RedisAwareInterface
             }
 
             // All ban words where inside the user message
-            if($find == count($banwords)) {
-                if($event->getMessage()->hasRankModerator()) {
+            if ($find == count($banwords)) {
+                if ($event->getMessage()->hasRankModerator()) {
                     $event->setResponse('C\'est pas bien de narguer les gens!');
                 } else {
                     $event->setResponse('Je reconnais ca! C\'est motif de ban!');
                 }
-                
+
                 $event->stopPropagation();
                 break;
             }
