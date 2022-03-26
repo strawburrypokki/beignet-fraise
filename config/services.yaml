@@ -6,6 +6,7 @@
 parameters:
   twitch.bot_account: '%env(string:TWITCH_BOT_ACCOUNT)%'
   twitch.oauth: '%env(string:TWITCH_OAUTH)%'
+  twitch.channel: '%env(string:TWITCH_CHANNEL)%'
   redis.dsn: '%env(string:REDIS_DSN)%'
 
 services:
@@ -29,6 +30,7 @@ services:
       arguments:
         $twitchBotAccount: '%twitch.bot_account%'
         $twitchOauth: '%twitch.oauth%'
+        $twitchChannel: '%twitch.channel%'
     Predis\Client:
       arguments:
         $parameters: '%redis.dsn%'

@@ -6,6 +6,8 @@ services:
       dockerfile: docker/app/Dockerfile
     volumes:
       - ./:/app
-    command: ["bin/console", "twitch", "${TWITCH_CHANNEL}", "-vv"]
+    environment:
+      TWITCH_CHANNEL: strawburrypokki
+    command: ["bin/console", "twitch", "-vv", "--colors", "--welcome"]
   db:
     image: redis:6-bullseye

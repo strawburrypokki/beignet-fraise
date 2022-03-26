@@ -8,6 +8,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 RUN docker-php-ext-install sockets zip
 
-WORKDIR /app
+COPY ./ /app
 
 USER 1000
+
+WORKDIR /app
+
+CMD ["bin/console", "twitch"]
