@@ -1,3 +1,7 @@
 /vendor/
 /docker/
 /var/
+.env.local
+.php-cs-fixer.cache
+.php-cs-fixer.dist.php
+docker-compose.yml

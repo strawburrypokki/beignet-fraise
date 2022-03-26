@@ -5,7 +5,7 @@ services:
       context: ./
       dockerfile: docker/app/Dockerfile
     volumes:
-      - ./:/app
+      - ./:/var/www/html
     environment:
       TWITCH_CHANNEL: strawburrypokki
     command: ["bin/console", "twitch", "-vv", "--colors", "--welcome"]
