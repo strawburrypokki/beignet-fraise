@@ -46,7 +46,7 @@ class PingBotSubscriber implements EventSubscriberInterface
     public function onPingBot(SniffMessageEvent $event)
     {
         $event->getMessage()->parseRawMessage();
-        if (strstr($event->getMessage()->getRawMessage(), '@'.$this->twitchBotAccount)) {
+        if (stristr($event->getMessage()->getRawMessage(), $this->twitchBotAccount)) {
             $repliesPool = $event->getMessage()->isBroadcaster() ? $this->broadcasterReplies : $this->replies;
             $event->setResponse($repliesPool[array_rand($repliesPool)]);
             $event->stopPropagation();
