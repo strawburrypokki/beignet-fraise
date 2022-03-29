@@ -70,7 +70,9 @@ class Message
             return;
         }
 
-        if (preg_match('`(.*):([a-zA-Z]+)!.*:(.*)`', $this->rawMessage, $matches)) {
+        // Regex follows this pattern
+        // (badges):(author)!<random shit IDGAF> PRIVMSG #<channel name> :(the actual message body)
+        if (preg_match('`(.*):([a-zA-Z]+)!.*PRIVMSG \#[a-zA-Z]+ :(.*)`', $this->rawMessage, $matches)) {
             $this->parsed = true;
             $this->setRawTags($matches[1]);
             $this->setNickname($matches[2]);
