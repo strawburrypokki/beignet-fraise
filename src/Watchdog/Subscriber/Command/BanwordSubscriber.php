@@ -73,20 +73,30 @@ class BanwordSubscriber extends AbstractCommandSubscriber implements EventSubscr
                 break;
             case self::ADD_ACTION_NAME:
                 if (!strlen($name)) {
-                    $response = sprintf('"name" is missing.', $name, $value);
+                    $response = '"name" is missing. Please use !banword add [name] [value]';
                 } elseif (!strlen($value)) {
-                    $response = sprintf('"value" is missing.', $name, $value);
+                    $response = '"value" is missing. Please use !banword add [name] [value]';
                 } else {
+                    // Save banword config as lowercase to avoid name clashing
+                    $value = strtolower($value);
+                    $name = strtolower($name);
                     $this->redisClient->hmset(self::REDIS_KEY, [$name => $value]);
                     $response = sprintf('%s: "%s" a été ajouté 📝', $name, $value);
                 }
                 break;
             case self::DELETE_ACTION_NAME:
                 if (!strlen($name)) {
-                    $response = sprintf('"name" is missing.', $name, $value);
+                    $response = '"name" is missing. Please use !banword delete [name]';
                 } else {
-                    $this->redisClient->hdel(self::REDIS_KEY, $name);
-                    $response = sprintf('"%s" a été supprimé 🗑️', $name);
+                    // First check if field exists before deleting it
+                    // It doesn't make a difference if it doesn't exists
+                    // But we can give proper feedback if user made a typo
+                    if($this->redisClient->hget(self::REDIS_KEY, $name)) {
+                        $this->redisClient->hdel(self::REDIS_KEY, $name);
+                        $response = sprintf('"%s" a été supprimé 🗑️', $name);
+                    } else {
+                        $response = sprintf('"%s" n\'existe pas', $name);
+                    }
                 }
                 break;
             case self::CLEAR_ACTION_NAME:
