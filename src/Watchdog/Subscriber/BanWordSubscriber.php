@@ -30,6 +30,7 @@ class BanWordSubscriber implements EventSubscriberInterface, RedisAwareInterface
     public function onBanWord(SniffMessageEvent $event)
     {
         // Remove spaces from $message. They have no impact on the phonetic
+        $lowerMessage = strtolower($event->getMessage()->getMessage());
         $message = preg_replace("/\s+/", "", $event->getMessage()->getMessage());
         $messageMetaphoneKey = metaphone($message);
         // dump($messageMetaphoneKey);
@@ -51,7 +52,10 @@ class BanWordSubscriber implements EventSubscriberInterface, RedisAwareInterface
                 // dump($banwordMetaphoneKey);
 
                 // Ban word metaphone key is in the user message
-                if (strstr($messageMetaphoneKey, $banwordMetaphoneKey)) {
+                if (
+                    strstr($lowerMessage, $banword) || // Regular comparison
+                    strstr($messageMetaphoneKey, $banwordMetaphoneKey) // Metaphone comparison
+                ) {
                     $fastcache[$banword] = true;
                     $find++;
                 }
