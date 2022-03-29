@@ -65,19 +65,29 @@ class BanwordSubscriber extends AbstractCommandSubscriber implements EventSubscr
                     $part[] = sprintf('%s: "%s"', $configName, $configValue);
                 }
 
-                if(empty($part)) {
+                if (empty($part)) {
                     $response = 'Aucune liste de banword configurée 🗒️';
                 } else {
                     $response = implode(' || ', $part);
                 }
                 break;
             case self::ADD_ACTION_NAME:
-                $this->redisClient->hmset(self::REDIS_KEY, [$name => $value]);
-                $response = sprintf('%s: "%s" a été ajouté 📝', $name, $value);
+                if (!strlen($name)) {
+                    $response = sprintf('"name" is missing.', $name, $value);
+                } elseif (!strlen($value)) {
+                    $response = sprintf('"value" is missing.', $name, $value);
+                } else {
+                    $this->redisClient->hmset(self::REDIS_KEY, [$name => $value]);
+                    $response = sprintf('%s: "%s" a été ajouté 📝', $name, $value);
+                }
                 break;
             case self::DELETE_ACTION_NAME:
-                $this->redisClient->hdel(self::REDIS_KEY, $name);
-                $response = sprintf('"%s" a été supprimé 🗑️', $name);
+                if (!strlen($name)) {
+                    $response = sprintf('"name" is missing.', $name, $value);
+                } else {
+                    $this->redisClient->hdel(self::REDIS_KEY, $name);
+                    $response = sprintf('"%s" a été supprimé 🗑️', $name);
+                }
                 break;
             case self::CLEAR_ACTION_NAME:
                 $this->redisClient->del(self::REDIS_KEY);
@@ -87,6 +97,9 @@ class BanwordSubscriber extends AbstractCommandSubscriber implements EventSubscr
                 $response = 'Je ne reconnais pas cette action :|';
                 break;
         }
+
+        // Tagging author of the command to notify about result
+        $response = '@' . $event->getMessage()->getNickname() . ' -> ' . $response;
 
         $event->setResponse($response);
         $event->stopPropagation();
